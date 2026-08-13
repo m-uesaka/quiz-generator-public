@@ -1,6 +1,8 @@
-# quiz-factory
+# quiz-generator
 
 Claude Code で、**Obsidian に溜めた web クリップから日本語クイズを自動作問する**ための作業用リポジトリ雛形です。
+
+このリポジトリは[AIによるクイズの自動作問](https://note.com/alocasia011/n/n11581c6e4dc7?sub_rt=share_pw)を参考にしていますが，以下の点が異なります．
 
 参考にした仕組み（Codex + 6エージェント）からの主な変更点:
 
