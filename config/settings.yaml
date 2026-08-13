@@ -1,0 +1,50 @@
+# 環境依存の設定。ここだけ書き換えれば他はそのまま動く想定。
+
+paths:
+  # Obsidian の web クリップが置いてあるディレクトリ（絶対パス）
+  vault: "~/Documents/Obsidian"
+  clip_dir: "~/Documents/Obsidian/02-clip"
+  # 再帰的に探索するか
+  recursive: true
+  # 除外するサブディレクトリ名（glob）
+  exclude:
+    - "templates/**"
+    - "archive/**"
+    - ".obsidian/**"
+
+# クリップの frontmatter からメタ情報を拾うときのキー候補（上から順に探す）
+clip_frontmatter_keys:
+  url: [source, url, link, source_url]
+  title: [title, aliases]
+  clipped_at: [created, clipped, date, published]
+  tags: [tags]
+
+batch:
+  # 1バッチあたりの本命候補数
+  primary_candidates: 4
+  # 補欠候補数
+  backup_candidates: 2
+  # 最終的な目標採用数
+  target_accepted: 4
+
+limits:
+  # 1つのクリップから作ってよい問題数の上限（通算）
+  max_questions_per_clip: 2
+  # 同一バッチ内で同じクリップを使うことは禁止（true 推奨）
+  one_clip_per_batch: true
+  # 問題文の目安文字数（超えたら style-reviewer が短縮を検討）
+  question_length_soft_max: 120
+
+learnings:
+  # watch → active に昇格する再発回数
+  promote_to_active_after: 2
+  # active → config のガイドへ昇格させる再発回数
+  graduate_to_guide_after: 5
+  # active に置いておくルールの上限（超えたら統合・昇格を検討）
+  max_active_rules: 40
+
+output:
+  # YAML に出力するフィールド（quiz-yaml-go のスキーマ準拠）
+  fields: [question, answer, spell, tags, comments, criteria]
+  # comments に出典 URL を含めるか（人間の確認用。不要なら false）
+  include_sources_in_comments: true

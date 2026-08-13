@@ -1,0 +1,25 @@
+batch_id: batch001
+created_at: 2026-08-12T10:00:00+09:00
+items:
+  - id: batch001-01
+    question: 岩手県の盛岡市と奥州市を主な産地とする、鉄瓶や茶の湯釜で知られる伝統的工芸品は何でしょう？
+    answer: 南部鉄器
+    tags: [生活, 工芸]
+    comments: [江戸時代に藩主が釜師を招いたことに始まるとされる]
+    criteria:
+      ok: [なんぶてっき]
+      ng: [鉄瓶]
+      repeat: [鉄器]
+    meta:
+      source_clip: sample.md
+      sources: [https://example.com/nanbu]
+      status: accepted
+  - id: batch001-02
+    question: 正常なヒト二倍体細胞を体外で培養したとき、約40〜60回の分裂で停止するという、細胞老化の説明に用いられる概念は何でしょう？
+    answer: ヘイフリック限界
+    spell: Hayflick limit
+    tags: [自然科学]
+    meta:
+      source_clip: sample2.md
+      sources: [https://example.com/hayflick]
+      status: accepted

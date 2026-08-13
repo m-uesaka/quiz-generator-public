@@ -1,0 +1,38 @@
+base: output/batch001.yaml
+revised: reviewed/batch001.yaml
+summary:
+  total: 2
+  unchanged: 0
+  modified: 2
+  added: 0
+  removed: 0
+changes:
+  - match: answer
+    answer: 南部鉄器
+    fields:
+      question:
+        before: 岩手県の盛岡市と奥州市を主な産地とする、鉄瓶や茶の湯釜で知られる伝統的工芸品は何でしょう？
+        after: 鉄瓶や茶の湯釜で知られる、岩手県の盛岡市と奥州市を主な産地とする伝統的工芸品は何でしょう？
+        diff: +「鉄瓶や茶の湯釜で知られる、」 -「、鉄瓶や茶の湯釜で知られる」
+      criteria:
+        repeat:
+          added:
+            - 鋳物
+          removed: []
+    hints:
+      - style
+      - unique
+  - match: answer
+    answer: ヘイフリック限界
+    fields:
+      tags:
+        before:
+          - 自然科学
+        after:
+          - 自然科学
+          - 生物
+        added:
+          - 生物
+        removed: []
+    hints:
+      - meta
