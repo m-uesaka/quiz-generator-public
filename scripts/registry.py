@@ -30,9 +30,8 @@ PAST = ROOT / "past_questions.yaml"
 
 def collect() -> dict:
     answers: dict[str, list[str]] = {}
-    questions: list[dict] = []
-    clip_usage: Counter = Counter()
-    tag_counts: Counter = Counter()
+    entries: dict[str, dict] = {}
+    order: list[str] = []
 
     files: list[Path] = []
     for d in SOURCE_DIRS:
@@ -40,7 +39,6 @@ def collect() -> dict:
     if PAST.exists():
         files.append(PAST)
 
-    seen_ids = set()
     for path in files:
         try:
             doc = load_yaml(path)
@@ -58,20 +56,39 @@ def collect() -> dict:
             norm = normalize_answer(ans)
             if ans:
                 answers.setdefault(norm, []).append(f"{path.name}#{qid}")
-            # 同じ問題が work/ と reviewed/ の両方にある場合は先勝ち（reviewed が優先）
-            key = norm or qid
-            if key in seen_ids:
-                continue
-            seen_ids.add(key)
-
-            questions.append(
-                {"id": qid, "file": path.name, "question": str(item.get("question", "")), "answer": ans}
-            )
             clip = meta.get("source_clip")
-            if clip:
-                clip_usage[str(clip)] += 1
-            for t in item.get("tags") or []:
-                tag_counts[str(t)] += 1
+            tags = [str(t) for t in (item.get("tags") or [])]
+            # 同じ問題が work/ と reviewed/ の両方にある場合、問題文・答えは先勝ち
+            # （reviewed が優先）。ただし reviewed には meta（source_clip等）が
+            # 無いため、clip_usage / tag_counts は後続の重複（work/archive）から補完する。
+            key = norm or qid
+            if key not in entries:
+                entries[key] = {
+                    "id": qid,
+                    "file": path.name,
+                    "question": str(item.get("question", "")),
+                    "answer": ans,
+                    "clip": str(clip) if clip else None,
+                    "tags": tags,
+                }
+                order.append(key)
+            else:
+                existing = entries[key]
+                if not existing["clip"] and clip:
+                    existing["clip"] = str(clip)
+                if not existing["tags"] and tags:
+                    existing["tags"] = tags
+
+    questions: list[dict] = []
+    clip_usage: Counter = Counter()
+    tag_counts: Counter = Counter()
+    for key in order:
+        e = entries[key]
+        questions.append({"id": e["id"], "file": e["file"], "question": e["question"], "answer": e["answer"]})
+        if e["clip"]:
+            clip_usage[e["clip"]] += 1
+        for t in e["tags"]:
+            tag_counts[t] += 1
 
     return {
         "generated_at": dt.datetime.now().isoformat(timespec="seconds"),
