@@ -111,7 +111,7 @@ flowchart TD
 信頼して自分の観点だけに集中します。
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef agent fill:#eef,stroke:#448,stroke-width:1px;
     classDef optional fill:#fee,stroke:#a44,stroke-width:1px,stroke-dasharray: 4 3;
     classDef store fill:#efe,stroke:#484,stroke-width:1px;
