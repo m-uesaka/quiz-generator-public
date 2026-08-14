@@ -18,7 +18,7 @@
 
 | カテゴリ | 意味 | 主な検査担当 |
 | --- | --- | --- |
-| `fact` | 事実誤り・出典の質 | quiz-fact-checker |
+| `fact` | 事実誤り・出典の質 | 人間（レビュー時）／個別依頼時のみ quiz-fact-checker |
 | `unique` | 別解・一意性・criteria の不足 | quiz-adversarial-checker |
 | `style` | 文体・語順・長さ・疑問詞 | quiz-style-reviewer |
 | `spoiler` | 問題文への答えの漏れ | quiz-style-reviewer |

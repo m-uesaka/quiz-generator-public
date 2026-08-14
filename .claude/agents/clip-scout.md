@@ -9,7 +9,8 @@ model: inherit
 
 ## 手順
 
-1. `LEARNINGS.md` の active セクションと `config/quiz_topic_taste_guide.md` を読む。
+1. `config/learnings_active.md`（LEARNINGS.md の active セクションのみを抜粋した自動生成ファイル）と
+   `config/quiz_topic_taste_guide.md` を読む。
 2. 未使用のクリップを取得する。
 
    ```bash

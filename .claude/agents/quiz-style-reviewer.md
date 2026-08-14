@@ -9,7 +9,8 @@ model: inherit
 
 ## 必読
 
-1. `LEARNINGS.md` の active セクション — **ここに書かれたルールへの違反は必ず指摘する**
+1. `config/learnings_active.md`（LEARNINGS.md の active セクションのみを抜粋した自動生成ファイル）
+   — **ここに書かれたルールへの違反は必ず指摘する**
 2. `config/quiz_question_style_guide.md`
 
 ## 検査項目
@@ -40,8 +41,34 @@ model: inherit
 - 修正後の問題文: （fix_to_pass の場合）
 ```
 
+`reject` の場合は上記だけを返す（理由が伝わればよく、確定レコードは不要）。
+`pass` / `fix_to_pass` の場合は、続けて**確定レコード**を必ず出力する。
+これはあなたが最後の工程であり、次の `quiz-final-editor` にはこのブロックだけが渡される
+（あなた自身やそれ以前の工程の検討過程・試行錯誤は渡らない）。
+そのため、`question` は fix_to_pass の修正を反映した最終形にし、
+`criteria` / `sources` / `spell` / `tags` / `learnings_applied` は渡された入力から漏れなく引き写すこと。
+
+```
+確定レコード:
+  question: （最終問題文）
+  answer: 
+  spell: （なければ省略）
+  tags: [...]
+  criteria:
+    ok: [...]
+    ng: [...]
+    repeat: [...]
+  sources: [...]
+  time_anchor: （quiz-writer が出した time_anchor をそのまま引き写す）
+  learnings_applied: [R-0003]
+  verification:
+    adversarial: "pass" | "fix_to_pass: 一言" | "reject: 一言"
+    style_reviewer: "pass" | "fix_to_pass: 一言"
+```
+
 ## 守ること
 
 - 事実関係の修正はしない。文章の問題だけを扱う。事実に疑問があれば指摘だけして差し戻す。
 - 修正で情報を削るとき、一意性を壊していないか自分で確認する。壊すなら削らない。
 - 好みの問題と規則の違反を区別する。LEARNINGS / スタイルガイドに根拠がない指摘は「参考」と明示する。
+- 確定レコードに、指摘や検討の過程（なぜそう直したか等）を書かない。次工程はそれを必要としない。

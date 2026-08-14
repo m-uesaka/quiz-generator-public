@@ -79,6 +79,14 @@ uv run scripts/review_diff.py /tmp/base-batchNNN.yaml output/batchNNN.yaml -o st
 
 ルールの書式は `LEARNINGS.md` 冒頭のコメント例に厳密に従う。ID は既存の最大値 + 1。**ID は再利用しない。**
 
+`LEARNINGS.md` の active セクションを書き換えたら（追加・昇格・統合・superseded_by の付与など、
+active の内容が変わる操作をしたら）必ず以下を実行し、生成エージェント用の抜粋ファイルを更新する。
+これを忘れると `quiz-batch` のサブエージェントが古いルールを読み続ける。
+
+```bash
+uv run scripts/extract_active_learnings.py
+```
+
 ### 良いルールの条件
 
 - 生成時に**そのまま適用できる**こと。「もっと自然な日本語にする」は不可。
@@ -110,3 +118,5 @@ uv run scripts/review_diff.py /tmp/base-batchNNN.yaml output/batchNNN.yaml -o st
 - 人間が消した問題を「不採用の理由が分からないから」と無視すること。
   削除は最も強いシグナルなので、必ず仮説を立てるか質問する。
 - `output/` や `reviewed/` を書き換えること。このスキルは `LEARNINGS.md` と `config/` だけを書く。
+- `config/learnings_active.md` を直接編集すること。これは `LEARNINGS.md` から自動生成される
+  ファイルなので、必ず `LEARNINGS.md` を直してから `scripts/extract_active_learnings.py` を実行する。

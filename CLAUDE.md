@@ -13,6 +13,8 @@
 ## 必読ファイル（作問を始める前に必ず読む）
 
 1. `LEARNINGS.md` — 過去の人手修正から抽出したルール。**最優先で従う。**
+   （作問サブエージェントは全文ではなく、active セクションだけを抜粋した自動生成ファイル
+   `config/learnings_active.md` を読む。トークン節約のため。中身の優先順位は同じ。）
 2. `config/quiz_question_style_guide.md` — 問題文の形式・文体の方針。
 3. `config/quiz_topic_taste_guide.md` — 題材・切り口の好み。
 4. `config/settings.yaml` — パスや各種上限値。
@@ -29,7 +31,7 @@ LEARNINGS のルールは新しいものほど優先する。
 | `reviewed/batchNNN.yaml` | 人間が修正した版。`output/` をコピーして編集する。 |
 | `state/` | クリップ索引・既出レジストリ。スクリプトが管理する。手で編集しない。 |
 | `archive/` | 確定済みの問題群。 |
-| `config/` | 作問方針。 |
+| `config/` | 作問方針。`learnings_active.md` は `LEARNINGS.md` からの自動生成物（手で編集しない）。 |
 
 ## スクリプト
 
@@ -42,11 +44,13 @@ uv run scripts/registry.py rebuild            # 既出レジストリを再構�
 uv run scripts/registry.py check "答え"        # 既出かどうか判定（終了コード 1 で既出）
 uv run scripts/export_yaml.py work/batch001.yaml -o output/batch001.yaml
 uv run scripts/review_diff.py output/batch001.yaml reviewed/batch001.yaml -o state/diff-batch001.yaml
+uv run scripts/extract_active_learnings.py   # LEARNINGS.md の active だけを config/learnings_active.md に抽出
 ```
 
 ## 禁止事項
 
 - `output/` を手で編集すること（`work/` を直して再エクスポートする）。
+- `config/learnings_active.md` を手で編集すること（`LEARNINGS.md` を直して `extract_active_learnings.py` を再実行する）。
 - 裏取りできていない主張を問題文に入れること。
 - 問題文に答え（およびその一部・読み・言い換え）を漏らすこと。
 - `state/registry.yaml` を LLM が直接書き換えること（必ずスクリプト経由）。
