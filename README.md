@@ -73,6 +73,8 @@ Obsidian のクリップ
    /quiz-learn → review_diff.py → LEARNINGS.md 更新 → ①に戻る
 ```
 
+agentsの詳細は[リポジトリ全体構造](./docs/architecture.md)を参照してください。
+
 ## ファイルの役割
 
 | パス | 役割 |
