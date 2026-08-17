@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pyyaml"]
+# dependencies = ["pyyaml", "typer"]
 # ///
 """既出レジストリの管理。重複判定を LLM に任せず、ここで機械的に行う。
 
 使い方:
-    uv run scripts/registry.py rebuild            # work/ reviewed/ archive/ past_questions.yaml から再構築
+    uv run scripts/registry.py rebuild
+        # work/ reviewed/ archive/ past_questions.yaml から再構築
     uv run scripts/registry.py check "南部鉄器"     # 既出なら終了コード 1
     uv run scripts/registry.py check --question "..." --answer "..."
     uv run scripts/registry.py stats              # ジャンル配分と目標の差分
@@ -14,128 +15,78 @@
 
 from __future__ import annotations
 
-import argparse
-import datetime as dt
 import difflib
-import sys
-from collections import Counter
-from pathlib import Path
 
-from quizlib import ROOT, dump_yaml, load_settings, load_yaml, normalize_answer, work_items
+import typer
+from quiz_generator.common import (
+    ROOT,
+    dump_yaml,
+    load_settings,
+    load_yaml,
+    normalize_answer,
+)
+from quiz_generator.registry import REGISTRY, collect, load_registry
 
-REGISTRY = ROOT / "state" / "registry.yaml"
-SOURCE_DIRS = ["reviewed", "work", "archive"]
-PAST = ROOT / "past_questions.yaml"
-
-
-def collect() -> dict:
-    answers: dict[str, list[str]] = {}
-    entries: dict[str, dict] = {}
-    order: list[str] = []
-
-    files: list[Path] = []
-    for d in SOURCE_DIRS:
-        files += sorted((ROOT / d).glob("*.yaml"))
-    if PAST.exists():
-        files.append(PAST)
-
-    for path in files:
-        try:
-            doc = load_yaml(path)
-        except Exception as e:  # noqa: BLE001
-            print(f"skip {path.name}: {e}", file=sys.stderr)
-            continue
-        for item in work_items(doc):
-            if not isinstance(item, dict):
-                continue
-            meta = item.get("meta") or {}
-            if str(meta.get("status", "accepted")) == "rejected":
-                continue
-            qid = item.get("id") or f"{path.stem}:{item.get('answer','')}"
-            ans = str(item.get("answer", "")).strip()
-            norm = normalize_answer(ans)
-            if ans:
-                answers.setdefault(norm, []).append(f"{path.name}#{qid}")
-            clip = meta.get("source_clip")
-            tags = [str(t) for t in (item.get("tags") or [])]
-            # 同じ問題が work/ と reviewed/ の両方にある場合、問題文・答えは先勝ち
-            # （reviewed が優先）。ただし reviewed には meta（source_clip等）が
-            # 無いため、clip_usage / tag_counts は後続の重複（work/archive）から補完する。
-            key = norm or qid
-            if key not in entries:
-                entries[key] = {
-                    "id": qid,
-                    "file": path.name,
-                    "question": str(item.get("question", "")),
-                    "answer": ans,
-                    "clip": str(clip) if clip else None,
-                    "tags": tags,
-                }
-                order.append(key)
-            else:
-                existing = entries[key]
-                if not existing["clip"] and clip:
-                    existing["clip"] = str(clip)
-                if not existing["tags"] and tags:
-                    existing["tags"] = tags
-
-    questions: list[dict] = []
-    clip_usage: Counter = Counter()
-    tag_counts: Counter = Counter()
-    for key in order:
-        e = entries[key]
-        questions.append({"id": e["id"], "file": e["file"], "question": e["question"], "answer": e["answer"]})
-        if e["clip"]:
-            clip_usage[e["clip"]] += 1
-        for t in e["tags"]:
-            tag_counts[t] += 1
-
-    return {
-        "generated_at": dt.datetime.now().isoformat(timespec="seconds"),
-        "count": len(questions),
-        "answers": {k: v for k, v in sorted(answers.items())},
-        "questions": questions,
-        "clip_usage": dict(clip_usage.most_common()),
-        "tag_counts": dict(tag_counts.most_common()),
-    }
+app = typer.Typer(add_completion=False, help=__doc__)
 
 
-def load_registry() -> dict:
-    if not REGISTRY.exists():
-        return collect()
-    return load_yaml(REGISTRY) or {}
-
-
-def cmd_rebuild(_args):
+@app.command("rebuild")
+def cmd_rebuild() -> None:
+    """work/ reviewed/ archive/ past_questions.yaml から再構築する。"""
     reg = collect()
     dump_yaml(reg, REGISTRY)
     print(f"{reg['count']} 問を登録しました -> {REGISTRY.relative_to(ROOT)}")
 
 
-def cmd_check(args):
+@app.command("check")
+def cmd_check(
+    value: str | None = typer.Argument(None, help="答え（位置引数）"),
+    answer: str | None = typer.Option(None, help="既出判定する答え"),
+    question: str | None = typer.Option(None, help="既出判定する問題文"),
+    threshold: float = typer.Option(0.82, help="問題文の類似度判定のしきい値"),
+) -> None:
+    """既出かどうかを判定する。既出なら終了コード 1。
+
+    答えの完全一致（正規化後）と、問題文の類似度（`difflib`）の両方で
+    判定する。
+
+    Args:
+        value: 位置引数で渡された答え（`--answer` の簡易版）。
+        answer: 既出判定する答え。
+        question: 既出判定する問題文。
+        threshold: 問題文の類似度判定のしきい値（0〜1）。
+
+    Raises:
+        typer.Exit: 既出が見つかった場合（終了コード1）。
+
+    """
     reg = load_registry()
-    answer = args.answer or args.value
-    question = args.question or ""
+    ans = answer or value
+    q = question or ""
     hits = []
-    if answer:
-        norm = normalize_answer(answer)
+    if ans:
+        norm = normalize_answer(ans)
         if norm in reg.get("answers", {}):
             hits.append(("same_answer", reg["answers"][norm]))
-    if question:
-        for q in reg.get("questions", []):
+    if q:
+        for item in reg.get("questions", []):
             ratio = difflib.SequenceMatcher(
-                None, normalize_answer(question), normalize_answer(q["question"])
+                None, normalize_answer(q), normalize_answer(item["question"])
             ).ratio()
-            if ratio >= args.threshold:
-                hits.append((f"similar_question({ratio:.2f})", [f"{q['file']}#{q['id']}"]))
+            if ratio >= threshold:
+                hits.append(
+                    (f"similar_question({ratio:.2f})", [f"{item['file']}#{item['id']}"])
+                )
     if hits:
         for kind, where in hits:
             print(f"DUPLICATE {kind}: {', '.join(where)}")
-        sys.exit(1)
+        raise typer.Exit(code=1)
     print("OK 既出なし")
 
 
-def cmd_stats(_args):
+@app.command("stats")
+def cmd_stats() -> None:
+    """ジャンル配分と目標の差分を表示する。"""
     reg = load_registry()
     settings = load_settings()
     targets_path = ROOT / "config" / "genre_targets.yaml"
@@ -158,20 +109,5 @@ def cmd_stats(_args):
             print(f"  {n}\t{path}")
 
 
-def main():
-    ap = argparse.ArgumentParser(description=__doc__)
-    sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("rebuild").set_defaults(func=cmd_rebuild)
-    c = sub.add_parser("check")
-    c.add_argument("value", nargs="?", default=None, help="答え（位置引数）")
-    c.add_argument("--answer", default=None)
-    c.add_argument("--question", default=None)
-    c.add_argument("--threshold", type=float, default=0.82)
-    c.set_defaults(func=cmd_check)
-    sub.add_parser("stats").set_defaults(func=cmd_stats)
-    args = ap.parse_args()
-    args.func(args)
-
-
 if __name__ == "__main__":
-    main()
+    app()
