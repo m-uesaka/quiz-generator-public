@@ -43,18 +43,18 @@ uv run scripts/extract_active_learnings.py
 
 | # | エージェント | 入力 | 出力 |
 | --- | --- | --- | --- |
-| 1 | `clip-scout` | ジャンル指定 | 本命8件＋補欠2件の題材候補 |
+| 1 | `clip-scout` | ジャンル指定 | 本命4件＋補欠2件の題材候補（`settings.yaml` の `batch.primary_candidates`/`backup_candidates`） |
 | 2 | `quiz-writer` | 題材候補（全文） | 問題文ドラフト＋参考にした `sources`（URL） |
 | 3 | `quiz-adversarial-checker` | ドラフト | 一意性判定と criteria |
 | 4 | `quiz-style-reviewer` | ここまでの確定問題文 | 文体指摘と修正案＋**確定レコード**（pass/fix_to_passのみ） |
 | 5 | `quiz-final-editor` | 確定レコード一式（＋reject理由一覧） | `work/batchNNN.yaml` と採否 |
 
 工程 3〜4 は前の工程の修正を反映してから次に渡す。
-工程 3 で `reject` が出て本命が 8 件を割ったら、補欠候補を工程 2 から投入する。
+工程 3 で `reject` が出て本命が `primary_candidates`（既定4）件を割ったら、補欠候補を工程 2 から投入する。
 
 ### 工程5への引き渡しは確定レコードだけに絞る（トークン節約）
 
-工程 5（`quiz-final-editor`）は毎バッチで本命8件分の判定結果を受け取るため、
+工程 5（`quiz-final-editor`）は毎バッチで本命4件分の判定結果を受け取るため、
 工程2〜4の出力をすべてそのまま貼り付けると入力トークンが膨らみやすい。
 工程5に渡すのは以下だけにする。
 

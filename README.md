@@ -58,13 +58,11 @@ Obsidian のクリップ
       ▼
 ② quiz-writer             問題文ドラフト（LEARNINGS + スタイルガイド適用）
       ▼
-③ quiz-fact-checker       一次情報で裏取り（クリップは根拠にしない）
+③ quiz-adversarial-checker 別解潰し → criteria (ok/ng/repeat) 確定
       ▼
-④ quiz-adversarial-checker 別解潰し → criteria (ok/ng/repeat) 確定
+④ quiz-style-reviewer     文体・ネタバレ・LEARNINGS 適合
       ▼
-⑤ quiz-style-reviewer     文体・ネタバレ・LEARNINGS 適合
-      ▼
-⑥ quiz-final-editor       採否確定 → work/batchNNN.yaml
+⑤ quiz-final-editor       採否確定 → work/batchNNN.yaml
       ▼
    export_yaml.py → output/batchNNN.yaml （quiz-yaml-go スキーマ準拠）
       ▼
@@ -72,6 +70,9 @@ Obsidian のクリップ
       ▼
    /quiz-learn → review_diff.py → LEARNINGS.md 更新 → ①に戻る
 ```
+
+一次情報での裏取り（`quiz-fact-checker`）は通常サイクルには含まれません。人間のレビュー時
+（`reviewed/batchNNN.yaml` を編集するとき）か、個別に依頼したときだけ動きます。
 
 agentsの詳細は[リポジトリ全体構造](./docs/architecture.md)を参照してください。
 

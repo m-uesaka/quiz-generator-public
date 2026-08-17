@@ -67,9 +67,11 @@ uv run scripts/extract_active_learnings.py   # LEARNINGS.md の active だけを
 
 1. `clip-scout` が未使用クリップから題材候補を 4 件（＋補欠 2 件）出す
 2. `quiz-writer` が問題文ドラフトを作る
-3. `quiz-fact-checker` が一次情報で裏を取る
-4. `quiz-adversarial-checker` が別解を潰し `criteria` を埋める
-5. `quiz-style-reviewer` が文体と LEARNINGS 適合を見る
-6. `quiz-final-editor` が採否を決め `work/batchNNN.yaml` に確定、`export_yaml.py` と `registry.py rebuild` を実行
+3. `quiz-adversarial-checker` が別解を潰し `criteria` を埋める
+4. `quiz-style-reviewer` が文体と LEARNINGS 適合を見る
+5. `quiz-final-editor` が採否を決め `work/batchNNN.yaml` に確定、`export_yaml.py` と `registry.py rebuild` を実行
+
+`quiz-fact-checker` による一次情報の裏取りは通常サイクルには含まない。人間のレビュー時
+（`reviewed/batchNNN.yaml` を編集するとき）か、個別に依頼されたときのみ実行する。
 
 詳細は `.claude/skills/quiz-batch/SKILL.md` を参照。

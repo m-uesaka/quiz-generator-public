@@ -16,10 +16,11 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+# NOTE: dist/ is intentionally NOT ignored here — this project uses ./dist
+# as the /quiz-export output directory (quiz.csv / quiz.html / quiz.md).
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
