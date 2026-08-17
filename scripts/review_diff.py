@@ -24,7 +24,11 @@ from pathlib import Path
 import typer
 import yaml
 from quiz_generator.common import ROOT, dump_yaml, load_yaml, work_items
-from quiz_generator.review_diff import diff_item, hints_for, pair_items
+from quiz_generator.review_diff import (
+    pair_items,
+    guess_hint_tag,
+    return_structured_diff_per_question,
+)
 
 app = typer.Typer(add_completion=False)
 
@@ -86,7 +90,7 @@ def main(
                 }
             )
             continue
-        fields = diff_item(base_items[i], rev_items[j])
+        fields = return_structured_diff_per_question(base_items[i], rev_items[j])
         if not fields:
             stats["unchanged"] += 1
             continue
@@ -96,7 +100,7 @@ def main(
                 "match": how,
                 "answer": str(rev_items[j].get("answer", "")),
                 "fields": fields,
-                "hints": hints_for(fields, base_items[i], rev_items[j]),
+                "hints": guess_hint_tag(fields, base_items[i], rev_items[j]),
             }
         )
 

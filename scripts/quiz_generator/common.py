@@ -240,9 +240,7 @@ def _add_to_block_list(fm_lines: list[str], item_idxs: list[int], tag: str) -> b
         追加したら `True`、既に含まれていれば `False`。
 
     """
-    existing = [
-        _strip_quotes(re.sub(r"^\s+-\s+", "", fm_lines[k])) for k in item_idxs
-    ]
+    existing = [_strip_quotes(re.sub(r"^\s+-\s+", "", fm_lines[k])) for k in item_idxs]
     if tag in existing:
         return False
     indent_m = re.match(r"^(\s+)-\s+", fm_lines[item_idxs[0]])
@@ -277,9 +275,7 @@ def _add_to_inline_list(
     if tag in items:
         return False
     items.append(tag)
-    fm_lines[key_idx : key_idx + 1] = [f"{tags_key}:"] + [
-        f'  - "{it}"' for it in items
-    ]
+    fm_lines[key_idx : key_idx + 1] = [f"{tags_key}:"] + [f'  - "{it}"' for it in items]
     return True
 
 
