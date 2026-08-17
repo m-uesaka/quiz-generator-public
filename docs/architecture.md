@@ -39,7 +39,9 @@ quiz-generator/
 │   ├── genre_targets.yaml            # ジャンル配分の目標
 │   └── past_questions_analysis.md
 │
-├── scripts/*.py                    # 索引化・重複判定・変換・差分抽出（LLMに任せない処理）
+├── scripts/
+│   ├── *.py                        # CLI本体（typer）。索引化・重複判定・変換・差分抽出
+│   └── quiz_generator/*.py         # 上記から import される共通ロジック（common.py 等）
 │
 ├── work/batchNNN.yaml              # 作業用（出典・検証ログ・採否込み）。エージェントが書く
 ├── output/batchNNN.yaml            # 提出用。quiz-yaml-go スキーマ準拠。手で編集しない
@@ -196,8 +198,10 @@ flowchart LR
 
 ## 7. スクリプト一覧
 
-すべて `uv run scripts/xxx.py`（PyYAML 必須）で実行します。LLM に任せると事故りやすい
+すべて `uv run scripts/xxx.py`（typer 製 CLI。PyYAML 必須）で実行します。LLM に任せると事故りやすい
 機械的処理（重複判定・スキーマ変換・差分抽出）を担当し、判断そのものはさせません。
+依存関係は `pyproject.toml`（`uv sync` でローカル環境を作れる）と各スクリプト冒頭の PEP 723
+インラインメタデータの両方で管理しています。
 
 | スクリプト | 役割 |
 | --- | --- |
@@ -206,7 +210,9 @@ flowchart LR
 | `export_yaml.py` | `work/batchNNN.yaml` → quiz-yaml-go スキーマ準拠の `output/` へ変換 |
 | `review_diff.py` | `output/` と `reviewed/` の差分を構造化して出力 |
 | `extract_active_learnings.py` | `LEARNINGS.md` の active セクションだけを `config/learnings_active.md` に抽出 |
-| `quizlib.py` | 各スクリプトから import される共通ヘルパ |
+| `quiz_generator/common.py` | パス解決・YAML読み書き・設定読み込みなど、各スクリプトが共通で使うヘルパ |
+| `quiz_generator/learnings.py` | `extract_active_learnings.py` が使う LEARNINGS.md のパース・抽出ロジック |
+| `quiz_generator/clip_index.py` / `registry.py` / `export_yaml.py` / `review_diff.py` | 同名の CLI スクリプトが呼び出す本体ロジック（CLI 層とロジック層を分離） |
 
 ## 8. 優先順位・禁止事項の要点
 

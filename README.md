@@ -22,7 +22,7 @@ git init && git add -A && git commit -m "init"
 # 2. クリップの場所を設定
 $EDITOR config/settings.yaml   # paths.clip_dir を自分の Obsidian のパスに
 
-# 3. 索引を作る（PyYAML が必要。uv があれば依存は自動で入る）
+# 3. 索引を作る（PyYAML / typer が必要。uv があれば依存は自動で入る）
 uv run scripts/clip_index.py --rebuild
 uv run scripts/clip_index.py --unused -n 20
 
@@ -33,7 +33,24 @@ go install github.com/m-uesaka/quiz-yaml-go@latest   # または clone して go
 claude
 ```
 
-`uv` を使わない場合は `pip install pyyaml` して `python3 scripts/clip_index.py ...` でも動きます。
+`scripts/*.py` は各ファイル冒頭に PEP 723 のインラインメタデータ（`pyyaml` / `typer`）を持っているため、
+`uv run scripts/xxx.py` と打つだけで依存関係が自動解決されます。`uv sync` を事前に実行する必要はありません。
+
+### ローカル環境（pyproject.toml）
+
+エディタの補完・型チェックを効かせたい、`uv run` を毎回打たずに使いたい、lint / test を回したい、
+という場合はリポジトリ直下の `pyproject.toml` から仮想環境を作れます（Python 3.12 以上が必要）。
+
+```bash
+uv sync                          # .venv を作成し、pyyaml / typer と dev 依存（pytest, ruff）を入れる
+source .venv/bin/activate        # 以後 uv run なしで python3 scripts/xxx.py が動く
+
+uv run ruff check .              # lint（pyproject.toml の [tool.ruff.lint] 設定を使う）
+uv run pytest                    # テスト（現時点ではテストコードは未整備）
+```
+
+`uv` を使わず素の `pip` で動かす場合は `pip install pyyaml typer` してから
+`python3 scripts/clip_index.py ...` としてください。
 
 > サブエージェントは起動時にしか読み込まれません。`.claude/agents/` を編集したら Claude Code を再起動してください。
 
