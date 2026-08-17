@@ -22,9 +22,15 @@ uv run scripts/extract_active_learnings.py
 - `config/learnings_active.md`（`LEARNINGS.md` の active セクションのみを抜粋した自動生成ファイル。
   サブエージェントにもこちらを読ませる。`LEARNINGS.md` 本体は人間が読む・`/quiz-learn` が更新する用で、
   watch / graduated / 統計まで含むため生成サイクルでは読まない）
-- `config/quiz_question_style_guide.md`
-- `config/quiz_topic_taste_guide.md`
+- `config/quiz_question_style_guide.md`（問題文の構造・文体）
+- `config/quiz_notation_rules.md`（answer/spell/criteria の表記ルール）
+- `config/quiz_topic_taste_guide.md`（題材選びの好み）
+- `config/quiz_topic_framing_guide.md`（切り口の型・情報の組み合わせ方）
 - `config/settings.yaml`
+
+  各サブエージェントは上記4ファイルのうち自分の工程に必要な範囲だけを読む
+  （詳細は各 `.claude/agents/*.md` の「必読」）。ここでオーケストレーター自身が
+  全文に目を通しておくのは、後工程の出力が方針からズレていないか判断できるようにするため。
 
 `$ARGUMENTS` にジャンルやテーマの指定がある場合は、それを clip-scout に渡す。
 
@@ -68,6 +74,10 @@ uv run scripts/extract_active_learnings.py
 - 省略する代わりに、`quiz-writer` が出した `sources`（作問のために参照した URL。クリップ URL と
   web 補完先の両方）を必ず `work/batchNNN.yaml` の `meta.sources` にそのまま残し、
   人間がすぐ裏取りできるようにする。
+- `quiz-writer` は「検証してほしい主張」がバッチ内で多い（半数以上、または裏取りが弱くなりがちな
+  主張の型が2件以上重なる）場合、確定稿を出す前に自分で1〜2回の軽い WebSearch を行い、
+  裏付けを試みる（`.claude/agents/quiz-writer.md` 手順4）。quiz-fact-checker を呼ぶほどではない
+  軽量な自衛策であり、それでも裏取りできなかった主張は引き続き `sources` と共に人間のレビューに委ねる。
 - `quiz-final-editor` は「fact-checker の pass」を採用条件にしない（下記の通り）。
 - 明らかに怪しい主張（最上級表現・年号・因果関係など）に人間の目で気付いた場合や、
   人間から個別に指示があった場合は、その問題だけ `quiz-fact-checker` を呼んでよい。

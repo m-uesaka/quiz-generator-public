@@ -71,8 +71,11 @@ uv run scripts/review_diff.py /tmp/base-batchNNN.yaml output/batchNNN.yaml -o st
 - 新しい観測は `watch` に追加する。
 - `watch` にある既存ルールと同じ内容なら、再発回数を増やす。
   `settings.yaml` の `promote_to_active_after` に達したら `active` に移す。
-- `active` のルールが `graduate_to_guide_after` 回以上定着したら、
-  `config/quiz_question_style_guide.md` か `config/quiz_topic_taste_guide.md` に本文として書き、
+- `active` のルールが `graduate_to_guide_after` 回以上定着したら、内容に応じて
+  `config/quiz_question_style_guide.md`（問題文の構造・文体）、
+  `config/quiz_notation_rules.md`（answer/spell/criteria の表記）、
+  `config/quiz_topic_taste_guide.md`（題材選び）、
+  `config/quiz_topic_framing_guide.md`（切り口の型）のいずれかに本文として書き、
   LEARNINGS 側は `graduated` に移す（本文はガイドに一本化し、二重管理しない）。
 - 既存ルールと矛盾する新ルールが出たら、古い方に `superseded_by: R-NNNN` を書いて `graduated` に落とす。
 - `active` が `max_active_rules` を超えたら、似たルールを統合する。

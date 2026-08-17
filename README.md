@@ -82,7 +82,9 @@ agentsの詳細は[リポジトリ全体構造](./docs/architecture.md)を参照
 | `CLAUDE.md` | プロジェクト全体の方針。Claude Code が毎回読む |
 | `LEARNINGS.md` | **人手修正から抽出したルール。生成時に最優先で参照される** |
 | `config/quiz_question_style_guide.md` | 問題文の形式・文体（要カスタマイズ） |
-| `config/quiz_topic_taste_guide.md` | 題材・切り口の好み（要カスタマイズ） |
+| `config/quiz_notation_rules.md` | answer/spell/criteria の表記ルール（要カスタマイズ） |
+| `config/quiz_topic_taste_guide.md` | 題材選びの好み（要カスタマイズ） |
+| `config/quiz_topic_framing_guide.md` | 切り口の型・情報の組み合わせ方（要カスタマイズ） |
 | `config/settings.yaml` | パス・上限値・しきい値 |
 | `config/genre_targets.yaml` | ジャンル配分の目標（不要なら削除可） |
 | `.claude/skills/*/SKILL.md` | `/quiz-batch` などのコマンド本体 |
@@ -95,8 +97,13 @@ agentsの詳細は[リポジトリ全体構造](./docs/architecture.md)を参照
 
 ## 自分用ガイドの作り方（これをやると質が大きく変わります）
 
-`config/` に入っている 2 つのガイドは一般的な叩き台です。あなたの作問を再現させるには、
-**自分の過去問を使って作り直す**のが最も効きます。
+`config/` に入っている 4 つのガイド（`quiz_question_style_guide.md` / `quiz_notation_rules.md` /
+`quiz_topic_taste_guide.md` / `quiz_topic_framing_guide.md`）は一般的な叩き台です。
+あなたの作問を再現させるには、**自分の過去問を使って作り直す**のが最も効きます。
+各ファイルは対応するサブエージェントだけが読む設計になっているので（`.claude/agents/*.md` 参照）、
+まずは大枠の2ジャンル（文章の構造・文体／題材と切り口）で作り、
+内容が肥大化してきたら実務的な表記ルール（ふりがな・spell・criteria）や
+切り口の型を別ファイルに分けると、各サブエージェントが読む量を抑えられます。
 
 1. 普段どおり自分で作った問題を Claude に投げ、事実確認・日本語の自然さ・別解の有無・
    ネタバレの有無を指摘させる。
@@ -117,6 +124,12 @@ md ファイルを作ってください。題材ではなく、問題文の構�
 注目してください。
 → config/quiz_topic_taste_guide.md に保存
 ```
+
+ガイドが肥大化してきたら、`config/quiz_question_style_guide.md` の中の
+「answer/spell欄・criteria の書式」だけを `config/quiz_notation_rules.md` に、
+`config/quiz_topic_taste_guide.md` の中の「切り口の型・情報の組み合わせ方」だけを
+`config/quiz_topic_framing_guide.md` に、それぞれ切り出すと良いです
+（本リポジトリでの分割例も参考にしてください）。
 
 これをやる時間がない場合でも、`/quiz-learn` を数バッチ回せば `LEARNINGS.md` に
 同等の情報が自然に溜まっていきます。

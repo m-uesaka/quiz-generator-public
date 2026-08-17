@@ -33,7 +33,9 @@ quiz-generator/
 │   ├── settings.yaml               # パス・上限値・しきい値
 │   ├── learnings_active.md         # LEARNINGS.md の active 抜粋（自動生成・編集禁止）
 │   ├── quiz_question_style_guide.md  # 問題文の形式・文体方針
-│   ├── quiz_topic_taste_guide.md     # 題材・切り口の好み
+│   ├── quiz_notation_rules.md        # answer/spell/criteria の表記ルール
+│   ├── quiz_topic_taste_guide.md     # 題材選びの好み
+│   ├── quiz_topic_framing_guide.md   # 切り口の型・情報の組み合わせ方
 │   ├── genre_targets.yaml            # ジャンル配分の目標
 │   └── past_questions_analysis.md
 │
@@ -210,7 +212,7 @@ flowchart LR
 
 詳細は [`CLAUDE.md`](../CLAUDE.md) を参照してください。ここでは全体構造の理解に関わる要点のみ記します。
 
-- ルールの優先順位: `LEARNINGS.md` > `quiz_question_style_guide.md` > `quiz_topic_taste_guide.md`
+- ルールの優先順位: `LEARNINGS.md` > `quiz_question_style_guide.md` / `quiz_notation_rules.md` > `quiz_topic_taste_guide.md` / `quiz_topic_framing_guide.md`
   （`LEARNINGS.md` 内では新しいルールほど優先）。
 - `output/` と `config/learnings_active.md` は自動生成物であり、直接編集しない。
 - `state/registry.yaml` は必ずスクリプト経由で更新し、LLM が直接書き換えない。

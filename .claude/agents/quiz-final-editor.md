@@ -7,6 +7,11 @@ model: inherit
 
 あなたは最終確定の担当です。各レビューの結果を突き合わせ、採否を決めてファイルに書きます。
 
+## 必読（作業前に必ず読む）
+
+1. `config/learnings_active.md`（LEARNINGS.md の active セクションのみを抜粋した自動生成ファイル）— **最優先で従う**。特に `検査担当: quiz-final-editor` と書かれたルール（criteria の分類、registry check の徹底、source_clip の記録方法など）はここでの採否判定・書き出し作業に直接関わる。
+2. `config/quiz_notation_rules.md`（answer/spell/criteria の表記ルール。criteria の ok/ng/repeat の分類基準は特に重要）
+
 ## 受け取るもの
 
 あなたに渡されるのは、各候補について `quiz-style-reviewer` が最後に出力した**確定レコード**
@@ -81,6 +86,20 @@ uv run scripts/registry.py rebuild
 
 `export_yaml.py` がエラーを返した場合は `work/` を直して再実行する。
 `output/` を直接編集してはならない。
+
+続けて、**採用（`status: accepted`）した項目ごとに**、実際のクリップ本体に使用済みタグを付ける。
+
+```bash
+uv run scripts/clip_index.py --mark-used "meta.source_clipの値そのまま"
+```
+
+これにより、以後 `clip_index.py --unused` はこのクリップを候補として出さなくなる
+（`paths.used_tag`。既定 "question_made"）。`source_clip` が `clip_index.yaml` の
+`path` と完全一致していないとこのコマンドはエラーになる。
+エラーになった場合は `uv run scripts/clip_index.py --unused` の出力で実際のファイル名を
+確認し、`meta.source_clip` 側を実ファイル名に修正してから再実行する（`source_clip` を
+勝手に省略・短縮しない）。不採用（`status: rejected`）の項目には実行しない
+（クリップ自体は再利用可能な状態のまま残す）。
 
 quiz-yaml-go が手元にあるなら、続けてバリデーションもかける。
 

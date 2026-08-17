@@ -16,10 +16,15 @@
    （作問サブエージェントは全文ではなく、active セクションだけを抜粋した自動生成ファイル
    `config/learnings_active.md` を読む。トークン節約のため。中身の優先順位は同じ。）
 2. `config/quiz_question_style_guide.md` — 問題文の形式・文体の方針。
-3. `config/quiz_topic_taste_guide.md` — 題材・切り口の好み。
-4. `config/settings.yaml` — パスや各種上限値。
+3. `config/quiz_notation_rules.md` — answer/spell欄の表記・criteria の書式ルール（旧・style guide §8）。
+4. `config/quiz_topic_taste_guide.md` — 題材選びの好み。
+5. `config/quiz_topic_framing_guide.md` — 切り口の型・情報の組み合わせ方（旧・topic guide §3,4）。
+6. `config/settings.yaml` — パスや各種上限値。
 
-優先順位が競合した場合は `LEARNINGS.md` > `quiz_question_style_guide.md` > `quiz_topic_taste_guide.md` の順で従う。
+これらはサブエージェントごとに必要な範囲だけを読む設計になっている（各エージェント定義の
+「必読」を参照）。すべてを毎回全文読む前提ではない。
+優先順位が競合した場合は `LEARNINGS.md` > `quiz_question_style_guide.md`/`quiz_notation_rules.md`
+> `quiz_topic_taste_guide.md`/`quiz_topic_framing_guide.md` の順で従う。
 LEARNINGS のルールは新しいものほど優先する。
 
 ## ディレクトリ
@@ -39,7 +44,8 @@ LEARNINGS のルールは新しいものほど優先する。
 
 ```bash
 uv run scripts/clip_index.py --rebuild        # Obsidian のクリップを索引化
-uv run scripts/clip_index.py --unused -n 30   # まだ使っていないクリップを列挙
+uv run scripts/clip_index.py --unused -n 30   # まだ使っていないクリップを列挙（使用済みタグ付きは自動除外）
+uv run scripts/clip_index.py --mark-used "クリップ"  # 採用確定したクリップに使用済みタグを付ける
 uv run scripts/registry.py rebuild            # 既出レジストリを再構築
 uv run scripts/registry.py check "答え"        # 既出かどうか判定（終了コード 1 で既出）
 uv run scripts/export_yaml.py work/batch001.yaml -o output/batch001.yaml

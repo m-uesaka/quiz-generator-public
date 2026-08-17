@@ -11,7 +11,8 @@ model: inherit
 
 1. `config/learnings_active.md`（LEARNINGS.md の active セクションのみを抜粋した自動生成ファイル）
    — **ここに書かれたルールへの違反は必ず指摘する**
-2. `config/quiz_question_style_guide.md`
+2. `config/quiz_question_style_guide.md`（問題文の構造・文体）
+3. `config/quiz_notation_rules.md`（answer/spell欄・criteria の表記チェック用）
 
 ## 検査項目
 
