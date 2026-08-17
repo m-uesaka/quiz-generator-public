@@ -1,0 +1,41 @@
+[project]
+name = "quiz-generator"
+version = "0.1.0"
+description = "クイズ自動作問プロジェクト用スクリプト"
+authors = [{ name = "m-uesaka", email = "aleo724@gmail.com" }]
+requires-python = ">=3.12"
+dependencies = ["pyyaml>=6.0.2", "typer>=0.12.0"]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = ["pytest>=9.1.1", "ruff>=0.16.3"]
+
+[tool.ruff.lint]
+
+select = [
+    "B",
+    "E",
+    "F",
+    "I",
+    "W",
+    "PLE",
+    "UP",
+    "RUF",
+    "PLC",
+    "PLW",
+    "SIM",
+    "FURB",
+    "PIE",
+    "ANN",
+    "PYI",
+    "FA",
+    "TC",
+    "D",
+    "PLR",
+]
+# 日本語の全角記号（（）！？ー等）は意図した表記であり誤字ではないため対象外にする
+# D400/D415 は docstring 一文目が「。」で終わっていても ASCII の句読点扱いされず
+# 誤検知するため対象外にする
+ignore = ["RUF001", "RUF002", "RUF003", "D400", "D415"]
