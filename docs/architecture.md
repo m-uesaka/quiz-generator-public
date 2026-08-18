@@ -1,5 +1,7 @@
 # リポジトリ全体構造
 
+*The English version is here: [English version](architecture.en.md)*
+
 このドキュメントは、`quiz-generator`（クイズ自動作問プロジェクト）のディレクトリ構成・処理フロー・
 Claude Code の Skills / Subagents の役割分担をまとめたものです。プロジェクトの方針そのものは
 [`CLAUDE.md`](../CLAUDE.md) が正、運用の詳細は [`README.md`](../README.md) が正です。このドキュメントは

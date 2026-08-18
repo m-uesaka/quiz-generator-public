@@ -1,5 +1,7 @@
 # quiz-generator
 
+*The English version of this README is here: [English version](docs/README.en.md)*
+
 Claude Code で、**Obsidian に溜めた web クリップから日本語クイズを自動作問する**ための作業用リポジトリ雛形です。
 
 このリポジトリは[AIによるクイズの自動作問](https://note.com/alocasia011/n/n11581c6e4dc7?sub_rt=share_pw)を参考にしていますが，以下の点が異なります．
